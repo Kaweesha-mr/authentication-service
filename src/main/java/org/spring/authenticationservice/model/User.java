@@ -1,12 +1,12 @@
 package org.spring.authenticationservice.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+
 
 import java.util.HashSet;
 import java.util.Set;
 
-@Data
 @Entity
 @Table(name = "users")
 public class User {
@@ -26,4 +26,17 @@ public class User {
 
     @ManyToMany(fetch = FetchType.EAGER)
     private Set<Role> roles = new HashSet<>();
+
+    public String getPassword() {
+        return password;
+    }
+
+    public boolean getIsEnabled() {
+        return isEnabled;
+    }
+
+    public String getUsername() {
+        return email;
+    }
+
 }
