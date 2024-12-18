@@ -1,7 +1,9 @@
 package org.spring.authenticationservice.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
+@Data
 @Entity
 @Table(name = "roles")
 public class Role {
