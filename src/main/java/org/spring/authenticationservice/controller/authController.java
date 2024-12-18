@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
+
 @RestController
 public class authController {
 
@@ -27,11 +29,10 @@ public class authController {
     private JwtService jwtService;
 
 
-
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody User user) {
 
-        if(userService.findUserByUsername(user.getEmail())){
+        if (userService.findUserByUsername(user.getEmail())) {
             return new ResponseEntity<>("Email Already Exists", HttpStatus.CONFLICT);
         }
 
@@ -39,5 +40,26 @@ public class authController {
 
         return new ResponseEntity<>("User Registered Successfully", HttpStatus.CREATED);
     }
+
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody User user) {
+        try{
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword())
+            );
+
+            if (authentication.isAuthenticated()) {
+                String token = jwtService.generateToken(user.getUsername());
+                return new ResponseEntity<>(token, HttpStatus.OK);
+
+            }
+        }
+        catch (Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity<>("User Not Found", HttpStatus.NOT_FOUND);
+    }
+
 
 }
