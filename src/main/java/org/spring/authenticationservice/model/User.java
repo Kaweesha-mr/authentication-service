@@ -1,6 +1,7 @@
 package org.spring.authenticationservice.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
 import lombok.Getter;
 
 
@@ -31,6 +32,10 @@ public class User {
         return password;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
     public boolean getIsEnabled() {
         return isEnabled;
     }
@@ -38,5 +43,11 @@ public class User {
     public String getUsername() {
         return email;
     }
+
+    public void setPassword(String password){
+        this.password = password;
+    }
+
+
 
 }
