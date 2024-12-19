@@ -77,4 +77,13 @@ public class JwtService {
                 .getPayload();
 
     }
+
+
+    public String generateActivationToken(String userId){
+        return Jwts.builder()
+                .subject(userId)
+                .expiration(new Date(System.currentTimeMillis() + 86400000))
+                .signWith(SignatureAlgorithm.HS256,secretKey)
+                .compact();
+    }
 }
