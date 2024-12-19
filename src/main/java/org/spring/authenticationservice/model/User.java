@@ -1,12 +1,7 @@
 package org.spring.authenticationservice.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.Getter;
 
-
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @Table(name = "users")
