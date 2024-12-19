@@ -25,8 +25,13 @@ public class User {
     @Column(nullable = false)
     private boolean isEnabled;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    private Set<Role> roles = new HashSet<>();
+
+
+    // Default constructor
+    public User() {
+
+    }
+
 
     public String getPassword() {
         return password;

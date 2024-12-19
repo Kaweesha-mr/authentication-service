@@ -1,5 +1,6 @@
 package org.spring.authenticationservice.controller;
 
+import io.jsonwebtoken.Claims;
 import org.spring.authenticationservice.Service.JwtService;
 import org.spring.authenticationservice.Service.UserService;
 import org.spring.authenticationservice.model.User;
@@ -32,9 +33,13 @@ public class authController {
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody User user) {
 
+
+
         if (userService.findUserByUsername(user.getEmail())) {
             return new ResponseEntity<>("Email Already Exists", HttpStatus.CONFLICT);
         }
+
+
 
         userService.saveUser(user);
 
@@ -43,7 +48,7 @@ public class authController {
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody User user) {
-        try{
+        try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword())
             );
@@ -53,12 +58,32 @@ public class authController {
                 return new ResponseEntity<>(token, HttpStatus.OK);
 
             }
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
 
         return new ResponseEntity<>("User Not Found", HttpStatus.NOT_FOUND);
+    }
+
+    @PostMapping("/validate")
+    public ResponseEntity<?> validateToken(@RequestBody Map<String, String> request) {
+        String token = request.get("token");
+
+        try {
+
+                Claims claims = jwtService.getClaimsFromToken(token);
+                return ResponseEntity.ok(Map.of(
+                        "valid", true,
+                        "user", claims.getSubject()
+                ));
+
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of(
+                    "valid", false,
+                    "error", "Invalid or expired token"
+            ));
+        }
     }
 
 
