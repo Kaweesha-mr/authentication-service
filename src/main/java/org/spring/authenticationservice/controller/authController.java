@@ -3,7 +3,7 @@ package org.spring.authenticationservice.controller;
 import io.jsonwebtoken.Claims;
 import org.spring.authenticationservice.Service.EmailService;
 import org.spring.authenticationservice.Service.JwtService;
-import org.spring.authenticationservice.Service.UserService;
+import org.spring.authenticationservice.Service.AuthService;
 import org.spring.authenticationservice.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,10 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,7 +20,7 @@ import java.util.Map;
 public class authController {
 
     @Autowired
-    private UserService userService;
+    private AuthService userService;
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -32,6 +29,8 @@ public class authController {
     private JwtService jwtService;
     @Autowired
     private EmailService emailService;
+    @Autowired
+    private AuthService authService;
 
 
     @PostMapping("/register")
@@ -50,19 +49,18 @@ public class authController {
         emailBody.put("to", user.getEmail());
         emailBody.put("name", user.getEmail()); // Assuming `User` has a `getName()` method
         //hosted name domain should be added
-        emailBody.put("activationLink", "http//:localhost:8080/activate" + activationToken);
+        emailBody.put("activationLink", "localhost:8080/activate?token=" + activationToken);
 
 
         try {
             String mailResponse = emailService.ActivationEmail(emailBody);
             System.out.println(mailResponse);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>("User registered but email not sent", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        return new ResponseEntity<>("User Registered Successsfully",HttpStatus.CREATED);
+        return new ResponseEntity<>("User Registered Successsfully", HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
@@ -90,11 +88,11 @@ public class authController {
 
         try {
 
-                Claims claims = jwtService.getClaimsFromToken(token);
-                return ResponseEntity.ok(Map.of(
-                        "valid", true,
-                        "user", claims.getSubject()
-                ));
+            Claims claims = jwtService.getClaimsFromToken(token);
+            return ResponseEntity.ok(Map.of(
+                    "valid", true,
+                    "user", claims.getSubject()
+            ));
 
 
         } catch (Exception e) {
@@ -103,6 +101,18 @@ public class authController {
                     "error", "Invalid or expired token"
             ));
         }
+    }
+
+    @GetMapping("/activate")
+    public ResponseEntity<?> activate(@RequestParam String token) {
+
+        if (authService.activateUserAccount(token)) {
+            return new ResponseEntity<>("User Activated", HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>("User Not Found", HttpStatus.NOT_FOUND);
+
+
     }
 
 }

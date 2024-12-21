@@ -41,7 +41,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/register","/validate").permitAll()  // Allow public access to login and req
+                        .requestMatchers("/login", "/register","/validate","activate").permitAll()  // Allow public access to login and req
                         .anyRequest().authenticated()  // All other requests require authentication
                 )
                 .sessionManagement(session-> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));  // Register authentication provider
