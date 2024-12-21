@@ -1,6 +1,7 @@
 package org.spring.authenticationservice.controller;
 
 import io.jsonwebtoken.Claims;
+import org.spring.authenticationservice.Service.EmailService;
 import org.spring.authenticationservice.Service.JwtService;
 import org.spring.authenticationservice.Service.UserService;
 import org.spring.authenticationservice.model.User;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -28,22 +30,39 @@ public class authController {
 
     @Autowired
     private JwtService jwtService;
+    @Autowired
+    private EmailService emailService;
 
 
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody User user) {
 
-
-
         if (userService.findUserByUsername(user.getEmail())) {
             return new ResponseEntity<>("Email Already Exists", HttpStatus.CONFLICT);
         }
 
-
+        String activationToken = jwtService.generateActivationToken(user.getEmail());
 
         userService.saveUser(user);
 
-        return new ResponseEntity<>("User Registered Successfully", HttpStatus.CREATED);
+        // Prepare the email body
+        Map<String, String> emailBody = new HashMap<>();
+        emailBody.put("to", user.getEmail());
+        emailBody.put("name", user.getEmail()); // Assuming `User` has a `getName()` method
+        //hosted name domain should be added
+        emailBody.put("activationLink", "http//:localhost:8080/activate" + activationToken);
+
+
+        try {
+            String mailResponse = emailService.ActivationEmail(emailBody);
+            System.out.println(mailResponse);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>("User registered but email not sent", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        return new ResponseEntity<>("User Registered Successsfully",HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
@@ -85,6 +104,5 @@ public class authController {
             ));
         }
     }
-
 
 }
