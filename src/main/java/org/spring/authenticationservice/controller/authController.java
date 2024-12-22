@@ -115,4 +115,19 @@ public class authController {
 
     }
 
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> forgotPassword(@RequestBody Map<String, String> request) {
+        String email = request.get("email");
+        String password = request.get("password");
+        String newPassword = request.get("newPassword");
+
+        if (!authService.changeAccountPassword(email, password, newPassword)) {
+            return new ResponseEntity<>("Password reset failed: Incorrect email or password", HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity<>("Password reset successful", HttpStatus.OK);
+
+    }
+
+
 }

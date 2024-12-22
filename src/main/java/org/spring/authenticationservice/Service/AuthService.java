@@ -54,5 +54,18 @@ public class AuthService {
     }
 
 
+    public boolean changeAccountPassword(String email, String password, String newPassword){
+
+
+
+        User user = userRepository.findByEmail(email).orElse(null);
+        if(user!= null && encoder.matches(password, user.getPassword())){
+            user.setPassword(encoder.encode(newPassword));
+            userRepository.save(user);
+            return true;
+        }
+        return false;
+    }
+
 
 }
