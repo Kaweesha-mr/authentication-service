@@ -7,6 +7,7 @@ import io.jsonwebtoken.security.SignatureException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
@@ -85,5 +86,12 @@ public class JwtService {
                 .expiration(new Date(System.currentTimeMillis() + 86400000))
                 .signWith(SignatureAlgorithm.HS256,secretKey)
                 .compact();
+    }
+
+
+    public boolean Validate(String jwtToken, UserDetails userDetails) {
+
+        final String username = getClaimsFromToken(jwtToken).getSubject();
+        return (username.equals(userDetails.getUsername()) && validateToken(jwtToken));
     }
 }

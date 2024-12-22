@@ -66,6 +66,7 @@ public class authController {
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody User user) {
         try {
+
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword())
             );
