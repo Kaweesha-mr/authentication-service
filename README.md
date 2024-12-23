@@ -54,8 +54,8 @@ Follow these steps to set up and install the Authentication Service.
 Clone the Authentication Service repository and navigate to the project directory.
 
 ```bash
-git clone https://github.com/your-auth-service-repo.git
-cd your-auth-service-repo
+git clone https://github.com/Kaweesha-mr/authentication-service.git
+cd authentication-service
 ```
 
 #### **4.2 Set Up the Environment Variables** 🌱
