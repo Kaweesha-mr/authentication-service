@@ -1,6 +1,4 @@
-Here's your document with some added emojis for visual appeal:
 
----
 
 ### Authentication Service with Eureka and Docker
 
@@ -225,5 +223,15 @@ networks:
 ### **7. Future Enhancements** 🔮
 
 - **Role-Based Authentication**: Role-based access control will be implemented as a future feature. This will allow roles such as "admin", "user", etc., to manage user permissions.
-  
---- 
+
+---
+
+### **8. Template Repository and Updates** 🛠️
+
+This repository serves as a **template** for building authentication services with Eureka, Docker, and PostgreSQL. You can use this repo as a starting point for your own projects. 
+
+To **update API endpoints** or **add new features**, simply modify the existing endpoints or create new ones within the provided structure. Ensure to follow the established pattern for adding authentication and token validation features.
+
+- Clone the [Template Repository](https://github.com/Kaweesha-mr/authentication-service-template).
+- Update the `.env` file for your specific environment configurations.
+- Customize or add any new API endpoints, such as additional user features or role-based authentication.
