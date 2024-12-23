@@ -42,7 +42,7 @@ public class authController {
 
         String activationToken = jwtService.generateActivationToken(user.getEmail());
 
-        userService.saveUser(user);
+
 
         // Prepare the email body
         Map<String, String> emailBody = new HashMap<>();
@@ -54,6 +54,7 @@ public class authController {
 
         try {
             String mailResponse = emailService.ActivationEmail(emailBody);
+            userService.saveUser(user);
             System.out.println(mailResponse);
         } catch (Exception e) {
             e.printStackTrace();

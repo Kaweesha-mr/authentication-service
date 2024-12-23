@@ -35,30 +35,33 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String requestPath = request.getRequestURI();
 
-        if (requestPath.equals("/login") || requestPath.equals("/register")
-                || requestPath.equals("/validate") || requestPath.equals("/activate")) {
+        if (requestPath.matches("^/(login|register|validate|activate).*")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        if(authHeader != null && authHeader.startsWith("Bearer ")) {
+        // Extract JWT token
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
             jwtToken = authHeader.substring(7);
             username = jwtService.getClaimsFromToken(jwtToken).getSubject();
+        } else {
+            filterChain.doFilter(request, response);
+            return;
         }
 
-        if(username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        // Authenticate user
+        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = applicationContext.getBean(UserDetailServiceImpl.class).loadUserByUsername(username);
 
-            if(jwtService.Validate(jwtToken,userDetails)){
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
+            if (jwtService.Validate(jwtToken, userDetails)) {
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                        userDetails, null, userDetails.getAuthorities());
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
-
-            filterChain.doFilter(request,response);
-
-
         }
+
+        filterChain.doFilter(request, response);  // Ensure the chain continues
 
 
     }
