@@ -235,3 +235,39 @@ To **update API endpoints** or **add new features**, simply modify the existing 
 - Clone the [Template Repository](https://github.com/Kaweesha-mr/authentication-service-template).
 - Update the `.env` file for your specific environment configurations.
 - Customize or add any new API endpoints, such as additional user features or role-based authentication.
+
+---
+
+### **9. Blog Series Overview** 📝  
+
+This microservice is being developed and documented as part of a blog series. Each blog post covers a specific aspect of building the Authentication Service, from the basics to advanced features.  
+
+#### **Blog Series Roadmap**  
+
+1. **[Part 1: Introduction to Spring Boot and Authentication](https://dev.to/kaweeshamr/building-secure-authentication-microservices-with-spring-boot-part-1-getting-started-37n6)**  
+   - Covers the basics of Spring Boot, why it's widely used for authentication, and an introduction to JWT-based authentication.  
+   - Discusses foundational concepts and sets the stage for building the Authentication Service.  
+
+2. **Part 2: Setting Up the Authentication Microservice (Coming Soon)**  
+   - Details the project structure, environment setup, and core functionalities like user registration, login, and email activation.  
+   - Includes code snippets and practical examples to implement the basics.  
+
+3. **Part 3: Integrating Eureka for Service Discovery (Coming Soon)**  
+   - Explains how to integrate Eureka Server for service registration and discovery.  
+   - Shows how the Authentication Service interacts with other microservices via Eureka.  
+
+4. **Part 4: Using Docker to Containerize the Application (Coming Soon)**  
+   - Step-by-step guide to containerize the Authentication Service and its dependencies (PostgreSQL, Email Service) using Docker and Docker Compose.  
+
+5. **Part 5: Advanced Features – Role-Based Authentication (Coming Soon)**  
+   - Introduces role-based access control (RBAC) for managing user permissions.  
+   - Shows how to extend the service to handle admin and user roles effectively.  
+
+6. **Part 6: Deployment and CI/CD Pipeline Setup (Coming Soon)**  
+   - Guides you through deploying the Authentication Service using cloud platforms.  
+   - Demonstrates setting up CI/CD pipelines for continuous integration and deployment.  
+
+#### **Stay Updated**  
+Follow the series to build your Authentication Service step by step, gain hands-on experience with microservices, and learn industry-relevant practices!  
+
+---
