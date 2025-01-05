@@ -24,6 +24,7 @@ public class JwtFilter extends OncePerRequestFilter {
     @Autowired
     JwtService jwtService;
 
+
     @Autowired
     ApplicationContext applicationContext;
 
