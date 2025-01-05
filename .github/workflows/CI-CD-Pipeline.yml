@@ -58,8 +58,3 @@ jobs:
       - name: Verify Application is Running
         run: sleep 10 # Adjust to give the application time to start
 
-      - name: Stop the Application
-        run: pkill -f 'spring-boot:run'
-
-      - name: Tear Down Docker Services
-        run: docker-compose down
