@@ -1,4 +1,4 @@
-name: CI/CD PipeLine
+name: CI/CD Pipeline
 
 on: 
   push:
@@ -9,18 +9,23 @@ on:
     branches:
       - main
       - dev
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      # Checkout code from the repository
       - name: Checkout code
         uses: actions/checkout@v2
 
+      # Set up JDK 21
       - name: Set up JDK 21
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           java-version: '21'
-          
+          distribution: 'temurin' # Use the OpenJDK distribution by default
+
+      # Cache Maven dependencies
       - name: Cache Maven dependencies
         uses: actions/cache@v2
         with:
@@ -29,12 +34,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
+      # Build the Java project with Maven
       - name: Build the Java project with Maven
         run: mvn clean install -DskipTests
 
+      # Run unit tests
       - name: Run Unit Tests
         run: mvn test
 
+      # Build Docker image
       - name: Build Docker Image
         run: docker build -t my-java-app .
-         
