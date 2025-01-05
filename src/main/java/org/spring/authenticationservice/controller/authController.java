@@ -57,7 +57,7 @@ public class authController {
             userService.saveUser(user);
             System.out.println(mailResponse);
         } catch (Exception e) {
-            e.printStackTrace();
+            //add a logger here kaweesha marasinghe
             return new ResponseEntity<>("User registered but email not sent", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
