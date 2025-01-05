@@ -1,0 +1,40 @@
+name: CI/CD PipeLine
+
+on: 
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
+    branches:
+      - main
+      - dev
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v2
+        with:
+          java-version: '21'
+          
+      - name: Cache Maven dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Build the Java project with Maven
+        run: mvn clean install -DskipTests
+
+      - name: Run Unit Tests
+        run: mvn test
+
+      - name: Build Docker Image
+        run: docker build -t my-java-app .
+         
