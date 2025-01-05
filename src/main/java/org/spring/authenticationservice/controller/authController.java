@@ -73,7 +73,7 @@ public class authController {
             );
 
             if (authentication.isAuthenticated()) {
-                String token = jwtService.generateToken(user.getUsername());
+                String token = jwtService.generateToken(user.getEmail());
                 return new ResponseEntity<>(token, HttpStatus.OK);
 
             }

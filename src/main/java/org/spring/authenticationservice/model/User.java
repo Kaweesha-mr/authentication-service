@@ -1,6 +1,7 @@
 package org.spring.authenticationservice.model;
 
 import jakarta.persistence.*;
+import lombok.Setter;
 
 
 @Entity
@@ -40,12 +41,12 @@ public class User {
         return isEnabled;
     }
 
-    public String getUsername() {
-        return email;
-    }
 
     public void setPassword(String password){
         this.password = password;
+    }
+    public void setEmail(String email) {
+        this.email = email;
     }
 
 
