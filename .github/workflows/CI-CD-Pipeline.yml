@@ -18,6 +18,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Cache Maven dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
       - name: Set up Docker and Docker Compose
         uses: docker/setup-buildx-action@v2
 
@@ -40,11 +48,11 @@ jobs:
         run: docker-compose up -d
 
       - name: Wait for Database to Be Ready
-        run: sleep 10 # Adjust based on your database startup time
+        run: sleep 10
 
       - name: Build and Test the Application
         run: |
-          mvn clean install -DskipTests
+          mvn install -DskipTests
           mvn test
 
       - name: Run the Application
@@ -56,5 +64,10 @@ jobs:
         run: mvn spring-boot:run &
 
       - name: Verify Application is Running
-        run: sleep 10 # Adjust to give the application time to start
+        run: sleep 10
 
+      - name: Stop the Application
+        run: pkill -f 'spring-boot:run'
+
+      - name: Tear Down Docker Services
+        run: docker-compose down
