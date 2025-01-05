@@ -20,10 +20,13 @@ public class AuthService {
     @Autowired
     private JwtService jwtService;
 
-    public void saveUser(User user) {
+    public void saveUser(User user) throws Exception {
         user.setPassword(encoder.encode(user.getPassword()));
-
-        userRepository.save(user);
+        try {
+            userRepository.save(user);
+        } catch (Exception e) {
+            throw new Exception("Error saving user to the database", e);
+        }
     }
 
     public Boolean findUserByUsername(String email){
