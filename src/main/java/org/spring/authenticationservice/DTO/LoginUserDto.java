@@ -1,8 +1,20 @@
 package org.spring.authenticationservice.DTO;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class LoginUserDto {
     private String email;
     private String password;
+    private List<String> roles = new ArrayList<>();
+
+    public List<String> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<String> roles) {
+        this.roles = roles;
+    }
 
     public String getEmail() {
         return email;
