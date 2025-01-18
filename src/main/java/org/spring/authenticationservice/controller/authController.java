@@ -1,6 +1,8 @@
 package org.spring.authenticationservice.controller;
 
 import io.jsonwebtoken.Claims;
+import org.spring.authenticationservice.DTO.LoginUserDto;
+import org.spring.authenticationservice.DTO.RegisterUserDto;
 import org.spring.authenticationservice.Service.AuthService;
 import org.spring.authenticationservice.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +20,10 @@ public class authController {
     private AuthService userService;
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody User user) {
+    public ResponseEntity<String> register(@RequestBody RegisterUserDto registerUserDto) {
 
         try {
-            userService.RegisterUser(user);
+            userService.RegisterUser(registerUserDto);
             return new ResponseEntity<>("User Registered Successfully", HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -29,9 +31,9 @@ public class authController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody User user) {
+    public ResponseEntity<String> login(@RequestBody LoginUserDto loginUserDto) {
         try {
-            String token  = userService.AuthenticateUser(user);
+            String token  = userService.AuthenticateUser(loginUserDto);
             return new ResponseEntity<>(token, HttpStatus.OK);
         }
         catch (Exception e){
