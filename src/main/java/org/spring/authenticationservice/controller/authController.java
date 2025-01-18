@@ -1,16 +1,11 @@
 package org.spring.authenticationservice.controller;
 
 import io.jsonwebtoken.Claims;
-import org.spring.authenticationservice.Service.EmailService;
-import org.spring.authenticationservice.Service.JwtService;
 import org.spring.authenticationservice.Service.AuthService;
 import org.spring.authenticationservice.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
