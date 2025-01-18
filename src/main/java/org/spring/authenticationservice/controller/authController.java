@@ -29,39 +29,18 @@ public class authController {
     private JwtService jwtService;
     @Autowired
     private EmailService emailService;
-    @Autowired
-    private AuthService authService;
+
 
 
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody User user) {
 
-        if (userService.findUserByUsername(user.getEmail())) {
-            return new ResponseEntity<>("Email Already Exists", HttpStatus.CONFLICT);
-        }
-
-        String activationToken = jwtService.generateActivationToken(user.getEmail());
-
-
-
-        // Prepare the email body
-        Map<String, String> emailBody = new HashMap<>();
-        emailBody.put("to", user.getEmail());
-        emailBody.put("name", user.getEmail()); // Assuming `User` has a `getName()` method
-        //hosted name domain should be added
-        emailBody.put("activationLink", "localhost:8080/activate?token=" + activationToken);
-
-
         try {
-            String mailResponse = emailService.ActivationEmail(emailBody);
-            userService.saveUser(user);
-            System.out.println(mailResponse);
+            userService.RegisterUser(user);
+            return new ResponseEntity<>("User Registered Successfully", HttpStatus.CREATED);
         } catch (Exception e) {
-            //add a logger here kaweesha marasinghe
-            return new ResponseEntity<>("User registered but email not sent", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
-        return new ResponseEntity<>("User Registered Successsfully", HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
@@ -108,7 +87,7 @@ public class authController {
     @GetMapping("/activate")
     public ResponseEntity<?> activate(@RequestParam String token) {
 
-        if (authService.activateUserAccount(token)) {
+        if (userService.activateUserAccount(token)) {
             return new ResponseEntity<>("User Activated", HttpStatus.OK);
         }
 
@@ -123,7 +102,7 @@ public class authController {
         String password = request.get("password");
         String newPassword = request.get("newPassword");
 
-        if (!authService.changeAccountPassword(email, password, newPassword)) {
+        if (!userService.changeAccountPassword(email, password, newPassword)) {
             return new ResponseEntity<>("Password reset failed: Incorrect email or password", HttpStatus.BAD_REQUEST);
         }
 

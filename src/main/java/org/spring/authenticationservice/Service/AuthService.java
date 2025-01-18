@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -20,13 +22,34 @@ public class AuthService {
     @Autowired
     private JwtService jwtService;
 
-    public void saveUser(User user) throws Exception {
-        user.setPassword(encoder.encode(user.getPassword()));
-        try {
-            userRepository.save(user);
-        } catch (Exception e) {
-            throw new Exception("Error saving user to the database", e);
+
+    @Autowired
+    private EmailService emailService;
+
+    public void RegisterUser(User user) throws Exception {
+        if (findUserByUsername(user.getEmail())) {
+            throw new Exception("User already exists");
         }
+
+        String activationToken = jwtService.generateActivationToken(user.getEmail());
+        user.setPassword(encoder.encode(user.getPassword()));
+
+        // Prepare the email body
+        Map<String, String> emailBody = new HashMap<>();
+        emailBody.put("to", user.getEmail());
+        emailBody.put("name", user.getEmail()); // Assuming `User` has a `getName()` method
+
+        //hosted name domain should be added
+        emailBody.put("activationLink", "localhost:8080/activate?token=" + activationToken);
+        userRepository.save(user);
+
+        try{
+           String mailResponse = emailService.ActivationEmail(emailBody);
+           System.out.println(mailResponse);
+       }
+       catch (Exception e) {
+           throw new Exception("Email could not be sent");
+       }
     }
 
     public Boolean findUserByUsername(String email){
