@@ -22,8 +22,7 @@ public class authController {
     @Autowired
     private AuthService userService;
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
+
 
     @Autowired
     private JwtService jwtService;
@@ -46,21 +45,13 @@ public class authController {
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody User user) {
         try {
-
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword())
-            );
-
-            if (authentication.isAuthenticated()) {
-                String token = jwtService.generateToken(user.getEmail());
-                return new ResponseEntity<>(token, HttpStatus.OK);
-
-            }
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            String token  = userService.AuthenticateUser(user);
+            return new ResponseEntity<>(token, HttpStatus.OK);
+        }
+        catch (Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        return new ResponseEntity<>("User Not Found", HttpStatus.NOT_FOUND);
     }
 
     @PostMapping("/validate")

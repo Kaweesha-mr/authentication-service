@@ -4,6 +4,12 @@ import io.jsonwebtoken.Claims;
 import org.spring.authenticationservice.model.User;
 import org.spring.authenticationservice.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +31,9 @@ public class AuthService {
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
     public void RegisterUser(User user) throws Exception {
         if (findUserByUsername(user.getEmail())) {
@@ -93,5 +102,16 @@ public class AuthService {
         return false;
     }
 
+    public String AuthenticateUser(User user) throws Exception{
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword())
+        );
 
+        if (authentication.isAuthenticated()) {
+            return jwtService.generateToken(user.getEmail());
+        }
+        else{
+            throw new UsernameNotFoundException("User not found with email: " + user.getEmail());
+        }
+}
 }
