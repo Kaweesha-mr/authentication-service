@@ -22,15 +22,6 @@ public class authController {
     @Autowired
     private AuthService userService;
 
-
-
-    @Autowired
-    private JwtService jwtService;
-    @Autowired
-    private EmailService emailService;
-
-
-
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody User user) {
 
@@ -56,17 +47,13 @@ public class authController {
 
     @PostMapping("/validate")
     public ResponseEntity<?> validateToken(@RequestBody Map<String, String> request) {
-        String token = request.get("token");
-
         try {
 
-            Claims claims = jwtService.getClaimsFromToken(token);
+            Claims claims = userService.validateToken(request.get("token"));
             return ResponseEntity.ok(Map.of(
                     "valid", true,
                     "user", claims.getSubject()
             ));
-
-
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of(
                     "valid", false,
@@ -81,9 +68,7 @@ public class authController {
         if (userService.activateUserAccount(token)) {
             return new ResponseEntity<>("User Activated", HttpStatus.OK);
         }
-
         return new ResponseEntity<>("User Not Found", HttpStatus.NOT_FOUND);
-
 
     }
 

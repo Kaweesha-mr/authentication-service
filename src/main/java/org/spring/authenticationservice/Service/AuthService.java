@@ -28,7 +28,6 @@ public class AuthService {
     @Autowired
     private JwtService jwtService;
 
-
     @Autowired
     private EmailService emailService;
 
@@ -113,5 +112,10 @@ public class AuthService {
         else{
             throw new UsernameNotFoundException("User not found with email: " + user.getEmail());
         }
-}
+    }
+
+
+    public Claims validateToken(String token) {
+        return jwtService.getClaimsFromToken(token);
+    }
 }
