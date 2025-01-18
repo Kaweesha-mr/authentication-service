@@ -1,6 +1,8 @@
 package org.spring.authenticationservice.Service;
 
 import io.jsonwebtoken.Claims;
+import org.spring.authenticationservice.DTO.LoginUserDto;
+import org.spring.authenticationservice.DTO.RegisterUserDto;
 import org.spring.authenticationservice.model.User;
 import org.spring.authenticationservice.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,13 +34,16 @@ public class AuthService {
     @Autowired
     private AuthenticationManager authenticationManager;
 
-    public void RegisterUser(User user) throws Exception {
+    public void RegisterUser(RegisterUserDto registerUserDto) throws Exception {
+        User user = new User();
+        user.setEmail(registerUserDto.getEmail());
+        user.setPassword(encoder.encode(registerUserDto.getPassword()));
+
         if (findUserByUsername(user.getEmail())) {
             throw new Exception("User already exists");
         }
 
         String activationToken = jwtService.generateActivationToken(user.getEmail());
-        user.setPassword(encoder.encode(user.getPassword()));
 
         // Prepare the email body
         Map<String, String> emailBody = new HashMap<>();
@@ -99,7 +104,12 @@ public class AuthService {
         return false;
     }
 
-    public String AuthenticateUser(User user) throws Exception{
+    public String AuthenticateUser(LoginUserDto loginUserDto) throws Exception{
+
+        User user = new User();
+        user.setEmail(loginUserDto.getEmail());
+        user.setPassword(loginUserDto.getPassword());
+
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword())
         );
