@@ -32,7 +32,29 @@ public class User {
     )
     private List<Role> roles = new ArrayList<>();
 
+    public void setRoles(List<Role> roles) {
+        this.roles = roles;
+    }
 
+    public boolean isEnabled() {
+        return isEnabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        isEnabled = enabled;
+    }
+
+    public List<Role> getRoles() {
+        return roles;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     // Default constructor
     public User() {

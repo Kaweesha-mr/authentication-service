@@ -3,7 +3,9 @@ package org.spring.authenticationservice.Service;
 import io.jsonwebtoken.Claims;
 import org.spring.authenticationservice.DTO.LoginUserDto;
 import org.spring.authenticationservice.DTO.RegisterUserDto;
+import org.spring.authenticationservice.model.Role;
 import org.spring.authenticationservice.model.User;
+import org.spring.authenticationservice.repository.RoleRepository;
 import org.spring.authenticationservice.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -34,10 +36,17 @@ public class AuthService {
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    @Autowired
+    private RoleRepository roleRepository;
+
     public void RegisterUser(RegisterUserDto registerUserDto) throws Exception {
         User user = new User();
         user.setEmail(registerUserDto.getEmail());
         user.setPassword(encoder.encode(registerUserDto.getPassword()));
+        // Assign default role USER
+        Role userRole = roleRepository.findByName("USER")
+                .orElseThrow(() -> new RuntimeException("Role USER not found"));
+        user.getRoles().add(userRole);
 
         if (findUserByUsername(user.getEmail())) {
             throw new Exception("User already exists");
