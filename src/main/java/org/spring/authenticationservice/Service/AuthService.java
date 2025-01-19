@@ -3,10 +3,13 @@ package org.spring.authenticationservice.Service;
 import io.jsonwebtoken.Claims;
 import org.spring.authenticationservice.DTO.LoginUserDto;
 import org.spring.authenticationservice.DTO.RegisterUserDto;
+import org.spring.authenticationservice.model.Role;
 import org.spring.authenticationservice.model.User;
+import org.spring.authenticationservice.repository.RoleRepository;
 import org.spring.authenticationservice.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -34,10 +37,17 @@ public class AuthService {
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    @Autowired
+    private RoleRepository roleRepository;
+
     public void RegisterUser(RegisterUserDto registerUserDto) throws Exception {
         User user = new User();
         user.setEmail(registerUserDto.getEmail());
         user.setPassword(encoder.encode(registerUserDto.getPassword()));
+        // Assign default role USER
+        Role userRole = roleRepository.findByName("USER")
+                .orElseThrow(() -> new RuntimeException("Role USER not found"));
+        user.getRoles().add(userRole);
 
         if (findUserByUsername(user.getEmail())) {
             throw new Exception("User already exists");
@@ -104,23 +114,26 @@ public class AuthService {
         return false;
     }
 
-    public String AuthenticateUser(LoginUserDto loginUserDto) throws Exception{
+    public String authenticateUser(LoginUserDto loginUserDto) throws Exception {
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginUserDto.getEmail(), loginUserDto.getPassword())
+            );
 
-        User user = new User();
-        user.setEmail(loginUserDto.getEmail());
-        user.setPassword(loginUserDto.getPassword());
+            if (authentication.isAuthenticated()) {
+                User user = userRepository.findByEmail(loginUserDto.getEmail())
+                        .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword())
-        );
+                String token = jwtService.generateToken(user.getEmail(), user.getRoles());
 
-        if (authentication.isAuthenticated()) {
-            return jwtService.generateToken(user.getEmail());
+                return token;
+            }
+        } catch (BadCredentialsException e) {
+            throw new Exception("Invalid email or password");
         }
-        else{
-            throw new UsernameNotFoundException("User not found with email: " + user.getEmail());
-        }
+        throw new Exception("Authentication failed");
     }
+
 
 
     public Claims validateToken(String token) {

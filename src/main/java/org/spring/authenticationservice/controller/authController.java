@@ -33,7 +33,7 @@ public class authController {
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody LoginUserDto loginUserDto) {
         try {
-            String token  = userService.AuthenticateUser(loginUserDto);
+            String token  = userService.authenticateUser(loginUserDto);
             return new ResponseEntity<>(token, HttpStatus.OK);
         }
         catch (Exception e){
