@@ -6,13 +6,14 @@ import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.core.userdetails.User;
+import org.spring.authenticationservice.model.Role;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -22,19 +23,26 @@ public class JwtService {
 
     private final String secretKey = "dajshdsajhd54343534543534fdfsdf543543jksadjash";
 
-    public String generateToken(String username) {
+    public String generateToken(String username, List<Role> roles) {
 
-        Map<String,Object> claims = new HashMap<>();
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("username", username);
 
+        // Extract only role names from the list of roles
+        List<String> roleNames = roles.stream()
+                .map(Role::getName) // Assuming Role has a getName() method
+                .toList();
+        claims.put("roles", roleNames);
 
         return Jwts.builder()
                 .claims(claims)
                 .subject(username)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis()+ 1000*60*3))
-                .signWith(getKey()).compact();
-
+                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 3)) // 3 minutes expiration
+                .signWith(getKey())
+                .compact();
     }
+
 
     private Key getKey() {
 
