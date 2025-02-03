@@ -4,13 +4,10 @@ import io.jsonwebtoken.Claims;
 import org.spring.authenticationservice.DTO.LoginUserDto;
 import org.spring.authenticationservice.DTO.RegisterUserDto;
 import org.spring.authenticationservice.Service.AuthService;
-import org.spring.authenticationservice.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
 import java.util.Map;
 
 @RestController
