@@ -44,4 +44,8 @@ public class VerificationTokenService {
         Optional<VerificationToken> optionalToken = tokenRepository.findByTokenAndTokenType(token, tokenType);
         return optionalToken.isPresent() && optionalToken.get().getExpirationDate().isAfter(LocalDateTime.now());
     }
+
+    public VerificationToken getVerificationToken(String token) {
+        return tokenRepository.findByToken(token);
+    }
 }
