@@ -2,19 +2,15 @@ version: '3.8'
 
 services:
   app:
-    build: .
-    environment:
-      - APPLICATION_PORT=${APPLICATION_PORT}
-      - DATABASE_URL=${DATABASE_URL}
-      - DATABASE_USERNAME=${DATABASE_USERNAME}
-      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
-      - EMAIL_SERVICE_NAME=localhost
+    image: kaweeshamr/authenticationservice:latest  # Pulls the image from Docker Hub
+    env_file: .env  # Loads environment variables from .env file
     ports:
-      - "8080:8080"
+      - "8080:8080"   # Exposes app on port 8080
     depends_on:
       - postgres
     networks:
       - mynetwork
+
   postgres:
     image: postgres:latest
     container_name: postgres_container_auth
@@ -23,7 +19,7 @@ services:
       POSTGRES_PASSWORD: 1234
       POSTGRES_DB: auth
     ports:
-      - "5432:5432"
+      - "5432:5432"   # Exposes PostgreSQL on port 5432
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
@@ -32,6 +28,6 @@ services:
 networks:
   mynetwork:
     driver: bridge
+
 volumes:
   postgres_data:
-
