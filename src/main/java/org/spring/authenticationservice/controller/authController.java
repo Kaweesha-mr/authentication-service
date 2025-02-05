@@ -14,13 +14,13 @@ import java.util.Map;
 public class authController {
 
     @Autowired
-    private AuthService userService;
+    private AuthService authService;
 
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody RegisterUserDto registerUserDto) {
 
         try {
-            userService.RegisterUser(registerUserDto);
+            authService.RegisterUser(registerUserDto);
             return new ResponseEntity<>("User Registered Successfully", HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -30,7 +30,7 @@ public class authController {
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody LoginUserDto loginUserDto) {
         try {
-            String token  = userService.authenticateUser(loginUserDto);
+            String token  = authService.authenticateUser(loginUserDto);
             return new ResponseEntity<>(token, HttpStatus.OK);
         }
         catch (Exception e){
@@ -43,7 +43,7 @@ public class authController {
     public ResponseEntity<?> validateToken(@RequestBody Map<String, String> request) {
         try {
 
-            Claims claims = userService.validateToken(request.get("token"));
+            Claims claims = authService.validateToken(request.get("token"));
             return ResponseEntity.ok(Map.of(
                     "valid", true,
                     "user", claims.getSubject()
@@ -59,7 +59,7 @@ public class authController {
     @GetMapping("/activate")
     public ResponseEntity<?> activate(@RequestParam String token) {
 
-        if (userService.activateUserAccount(token)) {
+        if (authService.activateUserAccount(token)) {
             return new ResponseEntity<>("User Activated", HttpStatus.OK);
         }
         return new ResponseEntity<>("User Not Found", HttpStatus.NOT_FOUND);
@@ -67,17 +67,31 @@ public class authController {
     }
 
     @PostMapping("/reset-password")
-    public ResponseEntity<?> forgotPassword(@RequestBody Map<String, String> request) {
+    public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> request) {
         String email = request.get("email");
         String password = request.get("password");
         String newPassword = request.get("newPassword");
 
-        if (!userService.changeAccountPassword(email, password, newPassword)) {
+        if (!authService.changeAccountPassword(email, password, newPassword)) {
             return new ResponseEntity<>("Password reset failed: Incorrect email or password", HttpStatus.BAD_REQUEST);
         }
 
         return new ResponseEntity<>("Password reset successful", HttpStatus.OK);
 
+    }
+
+    @GetMapping("/forgotten-password")
+    public ResponseEntity<?> passwordResetLink(@RequestParam String email){
+        try{
+
+            if(authService.sendResetPasswordEmail(email)){
+                return new ResponseEntity<>("Password reset successful", HttpStatus.OK);
+            }
+            return new ResponseEntity<>("Password reset failed: Incorrect email", HttpStatus.BAD_REQUEST);
+        }
+        catch (Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
 
