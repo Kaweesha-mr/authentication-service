@@ -83,7 +83,6 @@ public class authController {
     @GetMapping("/forgotten-password")
     public ResponseEntity<?> passwordResetLink(@RequestParam String email){
         try{
-
             if(authService.sendResetPasswordEmail(email)){
                 return new ResponseEntity<>("Password reset successful", HttpStatus.OK);
             }
@@ -92,6 +91,21 @@ public class authController {
         catch (Exception e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @GetMapping("/reset-password-Token")
+    public ResponseEntity<?> resetPasswordToken(@RequestParam String token,@RequestBody String newPassword){
+
+        try{
+            if(authService.resetPasswordByToken(token,newPassword)){
+                return new ResponseEntity<>("Password reset successful", HttpStatus.OK);
+            }
+            return new ResponseEntity<>("Password reset failed: Incorrect token", HttpStatus.BAD_REQUEST);
+        }
+        catch (Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
     }
 
 
