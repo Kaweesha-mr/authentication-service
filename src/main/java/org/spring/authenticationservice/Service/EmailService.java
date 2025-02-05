@@ -17,19 +17,31 @@ public class EmailService {
     @Value("${EMAIL_SERVICE_NAME}")
     private String emailServiceName;
 
-
-    public String ActivationEmail(Map<String, String> emailPayload){
-
+    public String sendEmail(String emailType, Map<String, String> emailPayload) {
         System.out.println(emailServiceName);
-        String url = "http://" +emailServiceName+ "/api/activation";
 
+        // Define email API endpoints
+        String endpoint;
+        switch (emailType.toLowerCase()) {
+            case "activation":
+                endpoint = "/api/activation";
+                break;
+            case "password-reset":
+                endpoint = "/api/password-reset";
+                break;
+            case "otp":
+                endpoint = "/api/send-otp";
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid email type: " + emailType);
+        }
 
+        // Build full URL
+        String url = "http://" + emailServiceName + endpoint;
 
+        // Send the request
         ResponseEntity<String> response = restTemplate.postForEntity(url, emailPayload, String.class);
 
         return response.getBody();
-
     }
-
-
 }
