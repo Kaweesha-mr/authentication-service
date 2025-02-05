@@ -4,7 +4,9 @@ import io.jsonwebtoken.Claims;
 import org.spring.authenticationservice.DTO.LoginUserDto;
 import org.spring.authenticationservice.DTO.RegisterUserDto;
 import org.spring.authenticationservice.model.Role;
+import org.spring.authenticationservice.model.TokenType;
 import org.spring.authenticationservice.model.User;
+import org.spring.authenticationservice.model.VerificationToken;
 import org.spring.authenticationservice.repository.RoleRepository;
 import org.spring.authenticationservice.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +18,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -119,7 +120,7 @@ public class AuthService {
             // send verification token to email
             Map<String,String> emailBody = Map.of(
                     "to", user.getEmail(),
-                    "resetLink", "localhost:8080/reset?token=" + token
+                    "resetLink", "localhost:8080/reset-password-Token?token=" + token
             );
 
             try{
@@ -156,5 +157,20 @@ public class AuthService {
 
     public Claims validateToken(String token) {
         return jwtService.getClaimsFromToken(token);
+    }
+
+    public boolean resetPasswordByToken(String token, String newPassword) {
+        VerificationToken verificationToken = verificationTokenService.getVerificationToken(token);
+        if(verificationTokenService.validateToken(token,TokenType.OTP_VERIFICATION)){
+            Optional<User> user = userRepository.findByEmail(verificationToken.getEmail());
+            if(user.isPresent()){
+                User storedUser = user.get();
+                storedUser.setPassword(encoder.encode(newPassword));
+                userRepository.save(storedUser);
+                return true;
+            }
+            return false;
+        }
+        throw new BadCredentialsException("Invalid verification token");
     }
 }
