@@ -1,5 +1,6 @@
 
 
+
 ### Authentication Service with Eureka and Docker
 
 This document provides setup instructions and configuration for the Authentication Service, which includes JWT-based authentication, email service integration, Eureka service registration, and PostgreSQL in Docker. 
